@@ -1,11 +1,22 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:core';
 import 'package:flutter/material.dart';
-import '../util/utils.dart';
+import '../util/utils.dart' as util;
+import 'package:http/http.dart' as http;
+
 class Weather extends StatefulWidget {
   @override
   _WeatherState createState() => _WeatherState();
 }
 
 class _WeatherState extends State<Weather> {
+
+  void showStuff() async {
+    Map data = await getWeather(util.appID, util.defaultCity);
+    print(data.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,8 +26,8 @@ class _WeatherState extends State<Weather> {
         backgroundColor: Colors.redAccent,
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.menu),
-            onPressed: ()=> debugPrint("hey")
+              icon: new Icon(Icons.menu),
+              onPressed: showStuff
           )
         ],
       ),
@@ -33,7 +44,7 @@ class _WeatherState extends State<Weather> {
             alignment: Alignment.topRight,
             margin: const EdgeInsets.fromLTRB(0.0, 10.9, 20.9, 0.0),
             child: Text('Spokane',
-            style: cityStyle(),),
+              style: cityStyle(),),
           ),
           new Container(
             alignment: Alignment.center,
@@ -42,11 +53,19 @@ class _WeatherState extends State<Weather> {
           new Container(
             margin: const EdgeInsets.fromLTRB(30.0, 20.0, 0.0, 0.0),
             child: Text('67.9F',
-            style: tempStyle()),
+                style: tempStyle()),
           )
         ],
       ),
     );
+  }
+
+  Future<Map> getWeather(String appId, String city) async {
+    String apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=${util.appID}&units=imperial";
+
+    http.Response response = await http.get(apiUrl);
+
+    return json.decode(response.body);
   }
 }
 
