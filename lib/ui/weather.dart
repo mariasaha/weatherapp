@@ -52,8 +52,8 @@ class _WeatherState extends State<Weather> {
           ),
           new Container(
             margin: const EdgeInsets.fromLTRB(30.0, 20.0, 0.0, 0.0),
-            child: Text('67.9F',
-                style: tempStyle()),
+            child: updateTempWidget("Manhattan"),
+                //style: tempStyle()),
           )
         ],
       ),
@@ -67,6 +67,32 @@ class _WeatherState extends State<Weather> {
 
     return json.decode(response.body);
   }
+  Widget updateTempWidget(String city) {
+    return FutureBuilder(
+      future: getWeather(util.appID, city),
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        //below is the stuff from the response.body we got above.
+        if (snapshot.hasData){
+          Map content = snapshot.data;
+        return Container(
+          child: Column(
+            children: <Widget>[
+              new ListTile(
+                title: new Text(content['main']['temp'].toString(),
+                  style: new TextStyle(
+                  fontStyle: FontStyle.normal,
+                  fontSize: 49.9,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500
+                ),),
+              )
+            ],
+          )
+        );
+    }else {
+          return Container();
+        }
+  });
 }
 
 TextStyle cityStyle() {
@@ -83,4 +109,6 @@ TextStyle tempStyle() {
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.w500,
   );
+ }
+//END
 }
